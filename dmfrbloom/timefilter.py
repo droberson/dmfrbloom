@@ -1,5 +1,7 @@
+""" timefilter.py - Time-decay bloom filters using Python standard library."""
+
 import time
-from math import ceil, log
+from math import log
 
 try:
     import mmh3
@@ -9,17 +11,25 @@ except ImportError:
 
 class TimeFilter():
     """TimeFilter class - Implements time-decaying bloom filters.
+
     Attributes:
-        size (int) - size of the filter.
-        hashcount (int) - ideal number of hashes per filter element.
-        filter (list) - list of elements. Value is None or a timestamp.
-        timeout (int) - seconds that elements should be valid.
+        size (int)      - Size of the filter.
+        hashcount (int) - Ideal number of hashes per filter element.
+        filter (list)   - List of elements. Value is None or a timestamp.
+        timeout (int)   - Seconds that elements should be valid.
+
+    Args:
+        expected (int)   - Expected number of elements.
+        f_rate (float)   - Acceptable false positve rate. Ex: 0.001
+        timeout (int)    - Number of second an element is valid for.
+        precision (bool) - Use floating point for timestamps? True/False
     """
-    def __init__(self, expected, fp_rate, timeout):
+    def __init__(self, expected, fp_rate, timeout, precision=False):
         self.size = self.ideal_size(expected, fp_rate)
         self.hashcount = self.ideal_hashcount(self.size, expected)
         self.filter = [None] * self.size
         self.timeout = timeout
+        self.precision = precision
 
     @staticmethod
     def ideal_size(expected, fp_rate):
@@ -50,7 +60,7 @@ class TimeFilter():
         Returns:
             Nothing.
         """
-        current_time = time.time()
+        current_time = time.time() if self.precision else int(time.time())
         for seed in range(self.hashcount):
             result = mmh3.hash(str(element), seed) % self.size
             self.filter[result] = current_time

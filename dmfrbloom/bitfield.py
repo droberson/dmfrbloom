@@ -1,8 +1,10 @@
+""" bitfield.py - bitfields using Python standard library. """
+
 from math import ceil
 from collections import namedtuple
 
 
-class BitField(object):
+class BitField():
     """BitField class -- Implements bitfields using the standard library.
 
     Attributes:

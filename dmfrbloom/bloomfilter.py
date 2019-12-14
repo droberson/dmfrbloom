@@ -1,3 +1,5 @@
+""" bloomfilter.py - Bloom filters using Python standard library. """
+
 from math import ceil, log
 
 try:
@@ -8,7 +10,7 @@ except ImportError:
 from .bitfield import BitField
 
 
-class BloomFilter(object):
+class BloomFilter():
     """BloomFilter class - Implements bloom filters using the standard library.
 
         Attributes:
@@ -117,16 +119,43 @@ class BloomFilter(object):
         return int(-(expected * log(fp_rate)) / (log(2) ** 2))
 
     def ideal_hashcount(self, expected):
+        """BloomFilter.ideal_hashcount() - Calculate ideal number of hashes to
+                                           perform given the expected number of
+                                           elements to be stored in the filter.
+
+        Args:
+            expected (int) - Expected number of elements.
+
+        Returns:
+            Ideal number of hashes (int).
+        """
         # ideal = (size / expected items) * log(2)
         return int((self.size / int(expected)) * log(2))
 
     @property
     def bytesize(self):
+        """BloomFilter.bytesize() - Get size of filter.
+
+        Args:
+            None
+
+        Returns:
+            Size of filter (int)
+        """
         return ceil(self.size / 8)
 
     @property
     def bytesize_human(self):
-        # Jacked this from some dude on the stacks.....
+        """BloomFilter.bytesize_human() - Get human-readable size of filter.
+
+        Stole this from someone on StackOverflow but don't remember where.
+
+        Args:
+            None.
+
+        Returns:
+            Filter size (str).
+        """
         suffix = ['bytes', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb']
         order = int(log(ceil(self.size) / 8, 2) / 10) if self.size else 0
         rounded = round(ceil(self.size / 8) / (1 << (order * 10)), 4)

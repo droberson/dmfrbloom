@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="dmfrbloom",
-    version="0.0.6",
+    version="0.0.7",
     author="Daniel Roberson",
     author_email="daniel@planethacker.net",
     description="Bloom filters with the standard library",
